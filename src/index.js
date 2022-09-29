@@ -25,7 +25,7 @@ loadMoreIsHidden();
 
 function onSearch(event) {
   event.preventDefault();
-  onLoadMore();
+  // onLoadMore();
   clearMurkup();
   apiService.resetPage();
   apiService.searchQuery = event.currentTarget.elements.searchQuery.value.trim();
@@ -46,8 +46,17 @@ function onSearch(event) {
 
 function onLoadMore() {
   apiService.incrementPage();
+ 
+  if (apiService.currentpage === totalPages) {
+    loadMoreIsHidden();
+    Report.info("",
+         "We're sorry, but you've reached the end of search results.", 'Okay'
+    );
+  };
+
   apiService.fetchImage().then(data => {
-    appendCardMarkup(data);
+    // appendCardMarkup(data);
+    refs.galleryEl.insertAdjacentHTML('beforeend', imgMarkup(data));
   });
   lightbox.refresh();  
 }
@@ -56,9 +65,9 @@ function appendCardMarkup(data) {
   totalPages = Math.ceil(data.totalHits / 40);
   if (apiService.currentpage === totalPages) {
     loadMoreIsHidden();
-    Report.info("",
-         "We're sorry, but you've reached the end of search results.", 'Okay'
-    );
+    // Report.info("",
+    //      "We're sorry, but you've reached the end of search results.", 'Okay'
+    // );
   };
   
   refs.galleryEl.insertAdjacentHTML('beforeend', imgMarkup(data));
