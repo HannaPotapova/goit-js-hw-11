@@ -1,4 +1,3 @@
-// import './sass/index.scss';
 import ApiService from './js/fetch-image';
 import getRefs from './js/get-refs';
 import imgMarkup from './js/markupPhotoCard';
@@ -25,7 +24,6 @@ loadMoreIsHidden();
 
 function onSearch(event) {
   event.preventDefault();
-  // onLoadMore();
   clearMurkup();
   apiService.resetPage();
   apiService.searchQuery = event.currentTarget.elements.searchQuery.value.trim();
@@ -55,7 +53,6 @@ function onLoadMore() {
   };
 
   apiService.fetchImage().then(data => {
-    // appendCardMarkup(data);
     refs.galleryEl.insertAdjacentHTML('beforeend', imgMarkup(data));
   });
   lightbox.refresh();  
@@ -65,11 +62,18 @@ function appendCardMarkup(data) {
   totalPages = Math.ceil(data.totalHits / 40);
   if (apiService.currentpage === totalPages) {
     loadMoreIsHidden();
-    // Report.info("",
-    //      "We're sorry, but you've reached the end of search results.", 'Okay'
-    // );
   };
   
+  if (data.hits.length === 0) {
+    loadMoreIsHidden();
+    Report.failure(
+      '',
+      'Sorry, there are no images matching your search query. Please try again.',      
+      'Ok'
+    );
+    return;
+  }
+
   refs.galleryEl.insertAdjacentHTML('beforeend', imgMarkup(data));
   
   Report.success(
